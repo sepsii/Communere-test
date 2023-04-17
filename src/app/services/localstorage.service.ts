@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserLocation } from '../models/user-location.model';
+import { Location } from '../models/location.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class LocalstorageService {
   key: string = 'user_data'
 
 
-  add(item:UserLocation) {
+  add(item: UserLocation) {
     const allItems = this.get()
     allItems.push(item)
     debugger
@@ -33,22 +34,29 @@ export class LocalstorageService {
   }
 
 
-  delete(item) {
-    // let customers:  = this.get()
-    // const afterItemDeletedCustomers = customers.filter(i => i.email !== email);
-    // const updatedCustomers = afterItemDeletedCustomers;
-    // this.addAll(updatedCustomers)
+  delete(locationDetails: Location) {
+    let allLocations: UserLocation[] = this.get()
+    const afterItemDeletedLocations = allLocations.filter(i => {
+      return i.locationDetails.lat === locationDetails.lat &&
+        i.locationDetails.lng === locationDetails.lng;
+    })
+
+    const updatedLocations = afterItemDeletedLocations;
+    this.addAll(updatedLocations)
   }
 
 
 
-  // update(item) {
-  //   const all = this.get()
-  //   const current = all.findIndex(i => i.email === item.email);
-  //   all[current] = customer;
-  //   this.addAll(all)
+  update(locationDetails: UserLocation) {
+    const all: UserLocation[] = this.get()
+    const current = all.findIndex(i => {
+      return i.locationDetails.lat === locationDetails.locationDetails.lat &&
+        i.locationDetails.lng === locationDetails.locationDetails.lng;
+    });
+    all[current] = locationDetails;
+    this.addAll(all)
 
-  // }
+  }
 
   deleteAllStorageItems(key: string): void {
     localStorage.removeItem(key);

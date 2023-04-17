@@ -1,13 +1,11 @@
-<div>
-    <div class="map">
+<div #myDiv>
+    <div class="map" *ngIf="!showEditPage">
 
-        <app-map #myDiv *ngIf="!showEditPage" [allLocations]="allLocations" (addLocation)="onAddLocation($event)"
+        <app-map  [allLocations]="allLocations" (addLocation)="onAddLocation($event)"
             (editLocation)="onEditLocation($event)"></app-map>
     </div>
-    <div class="edit">
-        <app-edit-location *ngIf="showEditPage" [data]="userLocation"
-            (addOrEditDone)="onAddOrEditDone($event)"></app-edit-location>
+    <div class="edit" *ngIf="showEditPage">
+        <app-edit-location [data]="userLocation" (addOrEditDone)="onAddOrEditDone($event)"></app-edit-location>
     </div>
 </div>
-<h1>{{test}}</h1>
 <h1 (click)="triggerFalseClick()">click</h1>
