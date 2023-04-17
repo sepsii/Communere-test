@@ -1,0 +1,39 @@
+.add_location {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* width: 100%; */
+    gap: 20px;
+    border: 1px solid grey;
+    padding: 20px;
+}
+
+.location_name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.location_name span {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.location_name input {
+    width: 50%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    border-radius: 8px;
+}

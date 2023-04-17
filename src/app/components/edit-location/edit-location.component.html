@@ -1,0 +1,39 @@
+<div>name :{{data.locationDetails.lng}}</div>
+<form [formGroup]="addLocationForm" class="add_location">
+    <div class="location_name">
+        <span>location Name</span>
+        <input type="text" formControlName="name" placeholder="">
+    </div>
+    <div class="location_name">
+        <span>location on map</span>
+        <img src="assets/leaflet.png" alt="" width="100" height="50">
+        <!-- <input type="text" formControlName="lanlng" placeholder=""> -->
+        <!-- <img *ngIf="locationImage" [src]="locationImage" alt=""> -->
+    </div>
+
+    <div class="location_name">
+        <span>location type</span>
+        <select formControlName="type">
+            <option *ngFor="let item of dropDownOptions" [value]="item.value" [selected]="isTypeSelected(item)">
+                {{item.label}}</option>
+
+        </select>
+    </div>
+
+    <div class="location_name">
+        <span>location logo</span>
+
+        <label>
+            <img width="50" width="100" height="50" [src]="logo?logo:'assets/placeholder.svg'" alt="">
+            <!-- <img *ngIf="!logo"  [src]="logo" alt=""> -->
+            <input type="file" (change)="onFileSelected($event)" style="display: none">
+        </label>
+    </div>
+
+
+</form>
+<div class="controls">
+    <button (click)="submit()">Submit</button>
+    <button (click)="close()">close</button>
+
+</div>
