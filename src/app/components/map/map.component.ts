@@ -16,9 +16,7 @@ import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 })
 export class MapComponent implements OnChanges {
   @Input() allLocations
-  @Input() isMapForEditPreviousLocation: boolean = false
   @Output() addLocation = new EventEmitter<Location>;
-  @Output() editLocation = new EventEmitter<Location>;
 
   locations: UserLocation[]
 
@@ -51,21 +49,16 @@ export class MapComponent implements OnChanges {
   onMapClick(event: { latlng: LatLng }) {
     const markerPosition = event.latlng;
     this.addLocation.emit(markerPosition)
-//     leafletImage(this.map, function (err, canvas) {
-// console.log('this.canvas',canvas);
-// console.log('im here');
-
-
-//     });
   }
 
 
   addAllMarkersToMap() {
     for (const location of this.locations) {
-      this.addMarker(location.locationDetails, location.name)
+      this.addMarker(location)
     }
   }
-  addMarker(markerPosition: Location, details?) {
+  addMarker(location: UserLocation) {
+
     const customPopup = L.popup({ closeButton: false }).setContent(
       `
       <div>
@@ -74,7 +67,7 @@ export class MapComponent implements OnChanges {
           Location Details
       </div>
       <div>
-          Details
+          ${location.name}
       </div>
       <div style="display: flex;flex-direction: row;justify-content: end; gap: 10px;">
           <button style="background-color: beige;" class="close"> close</button>
@@ -84,7 +77,7 @@ export class MapComponent implements OnChanges {
         `
     );
 
-    marker(markerPosition, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
+    marker(location.locationDetails, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
       this.elementRef.nativeElement
         .querySelector(".close")
         .addEventListener("click", e => {
@@ -95,10 +88,9 @@ export class MapComponent implements OnChanges {
         this.elementRef.nativeElement
           .querySelector(".edit")
           .addEventListener("click", e => {
-            this.edit(markerPosition);
+            // this.edit(markerPosition);
           });
       });
-
   }
 
 
@@ -107,13 +99,7 @@ export class MapComponent implements OnChanges {
     this.map.closePopup()
   }
 
-  edit(markerPosition: Location) {
-    this.map.closePopup()
 
-    this.editLocation.emit(markerPosition)
-
-
-  }
 
 
 

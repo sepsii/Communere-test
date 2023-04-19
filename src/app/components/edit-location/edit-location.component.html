@@ -1,39 +1,48 @@
-<div>name :{{data.locationDetails.lng}}</div>
-<form [formGroup]="addLocationForm" class="add_location">
-    <div class="location_name">
-        <span>location Name</span>
-        <input type="text" formControlName="name" placeholder="">
+<div *ngIf="!showMap">
+
+    <form [formGroup]="addLocationForm" class="add_location">
+        <div class="location_name">
+            <span>location Name</span>
+            <input type="text" formControlName="name" placeholder="">
+        </div>
+        <div class='error' *ngIf="addLocationForm.controls['name'].errors && addLocationForm.controls['name'].touched">
+            {{formValidationService.getErrorMessage(addLocationForm.get('name')!)}}
+        </div>
+
+        <div class="location_map">
+            <span>location on map</span>
+            <img (click)="showMap=true" src="assets/leaflet-placeholder.png" alt="" width="80" height="100">
+        </div>
+        <div class='error'
+            *ngIf="addLocationForm.controls['locationDetails'].errors && addLocationForm.controls['locationDetails'].touched">
+            {{formValidationService.getErrorMessage(addLocationForm.get('locationDetails')!)}}
+        </div>
+
+        <div class="location_type">
+            <span>location type</span>
+            <select formControlName="type">
+                <option *ngFor="let item of dropDownOptions" [value]="item.value">
+                    {{item.label}}</option>
+            </select>
+        </div>
+
+        <div class="location_logo">
+            <span>location logo</span>
+            <label>
+                <img width="50" width="100" height="100" [src]="logo?logo:'assets/placeholder.svg'" alt="">
+                <input type="file" (change)="onFileSelected($event)" style="display: none">
+            </label>
+        </div>
+        <div class='error' *ngIf="addLocationForm.controls['logo'].errors && addLocationForm.controls['logo'].touched">
+            {{formValidationService.getErrorMessage(addLocationForm.get('logo')!)}} </div>
+    </form>
+
+    <div class="controls">
+        <button (click)="submit()" [disabled]="addLocationForm.valid">Submit</button>
+        <button (click)="close()">close</button>
     </div>
-    <div class="location_name">
-        <span>location on map</span>
-        <img src="assets/leaflet.png" alt="" width="100" height="50">
-        <!-- <input type="text" formControlName="lanlng" placeholder=""> -->
-        <!-- <img *ngIf="locationImage" [src]="locationImage" alt=""> -->
-    </div>
 
-    <div class="location_name">
-        <span>location type</span>
-        <select formControlName="type">
-            <option *ngFor="let item of dropDownOptions" [value]="item.value" [selected]="isTypeSelected(item)">
-                {{item.label}}</option>
-
-        </select>
-    </div>
-
-    <div class="location_name">
-        <span>location logo</span>
-
-        <label>
-            <img width="50" width="100" height="50" [src]="logo?logo:'assets/placeholder.svg'" alt="">
-            <!-- <img *ngIf="!logo"  [src]="logo" alt=""> -->
-            <input type="file" (change)="onFileSelected($event)" style="display: none">
-        </label>
-    </div>
-
-
-</form>
-<div class="controls">
-    <button (click)="submit()">Submit</button>
-    <button (click)="close()">close</button>
-
+</div>
+<div *ngIf="showMap">
+    <app-map (addLocation)="onLocationSelected($event)" [allLocations]="allLocations"></app-map>
 </div>

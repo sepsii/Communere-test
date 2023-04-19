@@ -1,15 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import * as L from 'leaflet';
 import { getImageUrl } from 'leaflet-image';
 import { Location } from 'src/app/models/location.model';
 import { UserLocation } from 'src/app/models/user-location.model';
+import { FormValidationService } from 'src/app/services/form-validation.service';
 import { LocationService } from 'src/app/services/location.service';
+import { fileSizeValidator } from 'src/app/validator/fileSizeValidator';
 
 export const dropDownOptions = [
-  { value: 'business', label: 'Business' },
-  { value: 'home', label: 'Home' },
-  { value: 'cafe', label: 'Cafe' },
+  { value: 1, label: 'Business' },
+  { value: 2, label: 'Home' },
+  { value: 3, label: 'Cafe' },
 ];
 
 @Component({
@@ -19,83 +21,87 @@ export const dropDownOptions = [
 })
 
 export class EditLocationComponent implements OnInit {
-  @Input() data: UserLocation
-  @Output() addOrEditDone = new EventEmitter<boolean>
+  @Input() allLocations: UserLocation[]
 
   addLocationForm: FormGroup;
   showMap: boolean = false
   locationImage = null
   logo: string
   dropDownOptions = dropDownOptions
-  location: UserLocation
+  maxFileSize = 512 * 512;
 
-
-
-  constructor(private formBuilder: FormBuilder, private locationService: LocationService
+  constructor(private formBuilder: FormBuilder,
+    private locationService: LocationService,
+    public formValidationService: FormValidationService,
   ) {
 
   }
   ngOnInit(): void {
-
-
     this.addLocationForm = this.formBuilder.group({
-      name: [this.data.name, Validators.required],
-      locationDetails: [this.data.locationDetails, Validators.required],
-      type: [this.data.type, Validators.required],
-      logo: [this.logo, Validators.required],
+      name: ['', [Validators.required, Validators.minLength(5)]],
+      locationDetails: ['', Validators.required],
+      type: [dropDownOptions[0].value, Validators.required],
+      logo: ['', [Validators.required]],
     });
   }
 
 
-
-
   submit() {
-    this.location = {
-      name: this.addLocationForm.controls['name'].value,
-      locationDetails: this.addLocationForm.controls['locationDetails'].value,
-      type: this.addLocationForm.controls['type'].value,
-      logo: this.addLocationForm.controls['logo'].value,
-    }
-    console.log('this form', this.addLocationForm);
 
-    this.locationService.addLocationToStorage(this.location)
-    this.addOrEditDone.emit(true)
+    if (!this.addLocationForm.valid) {
+      this.addLocationForm.markAllAsTouched()
+    }
+    else {
+      const location = {
+        name: this.addLocationForm.controls['name'].value,
+        locationDetails: this.addLocationForm.controls['locationDetails'].value,
+        type: this.addLocationForm.controls['type'].value,
+        logo: this.addLocationForm.controls['logo'].value,
+      }
+      this.locationService.addLocationToStorage(location)
+    }
 
   }
 
   onFileSelected(event: any): void {
+    this.addLocationForm.controls['logo'].markAsTouched()
     const file: File = event.target.files[0];
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const imageBase64 = reader.result as string;
-      this.addLocationForm.controls['logo'].setValue(imageBase64);
-      console.log(imageBase64);
-      this.logo = imageBase64
 
+    if (file && file.size > this.maxFileSize) {
+      const control = { value: file };
+      const validator = fileSizeValidator(this.maxFileSize);
+      const errors = validator(control as AbstractControl);
+      this.addLocationForm.controls['logo'].setErrors(errors)
+      console.log(this.addLocationForm.controls['logo']);
+    }
+    else {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const imageBase64 = reader.result as string;
+        this.addLocationForm.controls['logo'].setValue(imageBase64);
+        this.logo = imageBase64
+      }
     };
   }
 
-  goToMap() {
+
+  setShowMap() {
     this.showMap = true
   }
 
 
   onLocationSelected(location: Location) {
     this.showMap = false
-    this.addLocationForm.controls['lanlng'].setValue(location)
+    this.addLocationForm.controls['locationDetails'].setValue(location)
   }
+
 
   close() {
-    this.addOrEditDone.emit(true)
+    console.log('this.addLocationForm.controls', this.addLocationForm.controls['name']);
+
   }
 
-  isTypeSelected(item) {
-    if (item.value == this.data.type) {
-      return true
-    }
-    else {
-      return false
-    }
-  }
+
+
 }
