@@ -1,7 +1,5 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import * as L from 'leaflet';
-import { getImageUrl } from 'leaflet-image';
+import { Component, Input, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location } from 'src/app/models/location.model';
 import { UserLocation } from 'src/app/models/user-location.model';
 import { FormValidationService } from 'src/app/services/form-validation.service';
