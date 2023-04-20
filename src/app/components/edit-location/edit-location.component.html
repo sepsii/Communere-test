@@ -5,7 +5,10 @@
     <form [formGroup]="addLocationForm" class="add_location">
         <div>
             <span>location Name</span>
-            <input type="text" formControlName="name" placeholder="">
+            <div>
+
+                <input type="text" formControlName="name" placeholder="" >
+            </div>
         </div>
         <div class='error' *ngIf="addLocationForm.controls['name'].errors && addLocationForm.controls['name'].touched">
             {{formValidationService.getErrorMessage(addLocationForm.get('name')!)}}
@@ -13,7 +16,7 @@
 
         <div>
             <span>location on map</span>
-            <img (click)="showMap=true" src="assets/leaflet-placeholder.png" alt="" width="80" height="100">
+            <img (click)="showMap=true" src="assets/leaflet-placeholder.png" alt="">
         </div>
         <div class='error'
             *ngIf="addLocationForm.controls['locationDetails'].errors && addLocationForm.controls['locationDetails'].touched">
@@ -23,15 +26,15 @@
         <div>
             <span>location type</span>
             <select formControlName="type">
-                <option *ngFor="let item of dropDownOptions" [value]="item.value">
-                    {{item.label}}</option>
+                <option *ngFor="let option of dropDownOptions" [value]="option.value">
+                    {{option.label}}</option>
             </select>
         </div>
 
         <div>
             <span>location logo</span>
             <label>
-                <img width="50" width="100" height="100" [src]="logo?logo:'assets/placeholder.svg'" alt="">
+                <img height="100" [src]="logo?logo:'assets/placeholder.svg'" alt="">
                 <input type="file" (change)="onFileSelected($event)" style="display: none">
             </label>
         </div>
