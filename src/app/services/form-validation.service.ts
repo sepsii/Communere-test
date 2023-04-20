@@ -20,6 +20,10 @@ export class FormValidationService {
       return `Minimum length is ${control.errors?.['minlength'].requiredLength}`;
     }
 
+    if (control.hasError('image')) {
+      return `please select supported Formats`;
+    }
+
 
 
     if (control.hasError('fileSizeExceedsLimit')) {

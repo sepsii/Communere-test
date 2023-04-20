@@ -3,7 +3,7 @@
         Share Location
     </div>
     <form [formGroup]="addLocationForm" class="add_location">
-        <div class="location_name">
+        <div>
             <span>location Name</span>
             <input type="text" formControlName="name" placeholder="">
         </div>
@@ -11,7 +11,7 @@
             {{formValidationService.getErrorMessage(addLocationForm.get('name')!)}}
         </div>
 
-        <div class="location_map">
+        <div>
             <span>location on map</span>
             <img (click)="showMap=true" src="assets/leaflet-placeholder.png" alt="" width="80" height="100">
         </div>
@@ -20,7 +20,7 @@
             {{formValidationService.getErrorMessage(addLocationForm.get('locationDetails')!)}}
         </div>
 
-        <div class="location_type">
+        <div>
             <span>location type</span>
             <select formControlName="type">
                 <option *ngFor="let item of dropDownOptions" [value]="item.value">
@@ -28,7 +28,7 @@
             </select>
         </div>
 
-        <div class="location_logo">
+        <div>
             <span>location logo</span>
             <label>
                 <img width="50" width="100" height="100" [src]="logo?logo:'assets/placeholder.svg'" alt="">

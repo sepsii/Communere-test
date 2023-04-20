@@ -6,8 +6,11 @@ import { Location } from 'src/app/models/location.model';
 import { UserLocation } from 'src/app/models/user-location.model';
 import { FormValidationService } from 'src/app/services/form-validation.service';
 import { LocationService } from 'src/app/services/location.service';
-import { fileSizeValidator } from 'src/app/validator/fileSizeValidator';
+import { fileSizeValidator } from 'src/app/validator/file-size-validator';
+import { imageValidator } from 'src/app/validator/image-validator'
 import { DROPDOWN_OPTIONS } from 'src/app/constants/dropdown-options'
+const MAX_FILE_SIZE = 512 * 512;
+
 
 @Component({
   selector: 'app-edit-location',
@@ -23,7 +26,6 @@ export class EditLocationComponent implements OnInit {
   locationImage = null
   logo: string | null
   dropDownOptions = DROPDOWN_OPTIONS
-  maxFileSize = 512 * 512;
 
   constructor(private formBuilder: FormBuilder,
     private locationService: LocationService,
@@ -40,55 +42,108 @@ export class EditLocationComponent implements OnInit {
     });
   }
 
-
   submit(): void {
-
     if (!this.addLocationForm.valid) {
-      this.addLocationForm.markAllAsTouched()
+      this.addLocationForm.markAllAsTouched();
+      return;
     }
-    else {
+
+    try {
       const location = {
         name: this.addLocationForm.controls['name'].value,
         locationDetails: this.addLocationForm.controls['locationDetails'].value,
         type: this.addLocationForm.controls['type'].value,
         logo: this.addLocationForm.controls['logo'].value,
-      }
-      this.locationService.addLocationToStorage(location)
-      this.addLocationForm.reset()
-      this.logo = null
+      };
+
+      this.locationService.addLocationToStorage(location);
+      this.addLocationForm.reset();
+      this.logo = null;
+    } catch (error) {
+      console.error('Error adding location:', error);
     }
   }
 
 
-  onFileSelected(event: any): void {
-    this.addLocationForm.controls['logo'].markAsTouched()
-    const file: File = event.target.files[0];
 
-    if (file && file.size > this.maxFileSize) {
-      const control = { value: file };
-      const validator = fileSizeValidator(this.maxFileSize);
-      const errors = validator(control as AbstractControl);
-      this.addLocationForm.controls['logo'].setErrors(errors)
-      console.log(this.addLocationForm.controls['logo']);
+  // onFileSelected(event: any): void {
+  //   this.addLocationForm.controls['logo'].markAsTouched()
+  //   const file: File = event.target.files[0];
+
+  //   if (file && file.size > MAX_FILE_SIZE) {
+  //     const control = { value: file };
+  //     const validator = fileSizeValidator(MAX_FILE_SIZE);
+  //     const errors = validator(control as AbstractControl);
+  //     this.addLocationForm.controls['logo'].setErrors(errors)
+  //   }
+  //   else {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => {
+  //       const imageBase64 = reader.result as string;
+  //       this.addLocationForm.controls['logo'].setValue(imageBase64);
+  //       this.logo = imageBase64
+  //     }
+  //   };
+  // }
+
+
+  onFileSelected(event: any): void {
+    this.addLocationForm.controls['logo'].markAsTouched();
+    const file: File = event.target.files[0];
+    if (!file) {
+      console.error('No file selected');
+      return;
     }
-    else {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const imageBase64 = reader.result as string;
-        this.addLocationForm.controls['logo'].setValue(imageBase64);
-        this.logo = imageBase64
+    const control = { value: file };
+    const imageValidatorRes = imageValidator(file);
+    const imageErrors = imageValidatorRes(control as AbstractControl);
+    if (imageErrors) {
+      console.error('select supporeted formats such as jpeg');
+      this.addLocationForm.controls['logo'].setErrors(imageErrors);
+      return
+    }
+
+
+    if (file.size > MAX_FILE_SIZE) {
+      const control = { value: file };
+      const validator = fileSizeValidator(MAX_FILE_SIZE);
+      const errors = validator(control as AbstractControl);
+      this.addLocationForm.controls['logo'].setErrors(errors);
+      console.error('File size exceeds the limit');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const imageBase64 = reader.result as string;
+      if (!imageBase64) {
+        console.error('Failed to read file');
+        return;
       }
+      this.addLocationForm.controls['logo'].setValue(imageBase64);
+      this.logo = imageBase64;
+    };
+    reader.onerror = () => {
+      console.error('Failed to read file');
     };
   }
 
 
-  setShowMap() {
+
+
+
+
+
+
+
+  setShowMap(): void {
     this.showMap = true
   }
 
 
-  onLocationSelected(location: Location) {
+  onLocationSelected(location: Location): void {
     this.showMap = false
     this.addLocationForm.controls['locationDetails'].setValue(location)
   }
