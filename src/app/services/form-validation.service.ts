@@ -12,24 +12,22 @@ export class FormValidationService {
       return '';
     }
 
-    if (control.hasError('required')) {
-      return 'This field is required';
+    const errors = control.errors;
+    if (!errors) {
+      return '';
     }
 
-    if (control.hasError('minlength')) {
-      return `Minimum length is ${control.errors?.['minlength'].requiredLength}`;
+    switch (Object.keys(errors)[0]) {
+      case 'required':
+        return 'This field is required';
+      case 'minlength':
+        return `Minimum length is ${errors['minlength'].requiredLength}`;
+      case 'image':
+        return `Please select supported formats such as jpeg`;
+      case 'fileSizeExceedsLimit':
+        return `File size exceeds the limit of ${errors['fileSizeExceedsLimit'].maxSize} KB`;
+      default:
+        return '';
     }
-
-    if (control.hasError('image')) {
-      return `please select supported Formats`;
-    }
-
-
-
-    if (control.hasError('fileSizeExceedsLimit')) {
-      return `File size exceeds the limit of ${control.errors?.['fileSizeExceedsLimit'].maxSize} KB`;
-    }
-    else { return '' }
-
   }
 }
