@@ -13,13 +13,14 @@ export class LocationService {
   constructor(private localStorageService: LocalstorageService
   ) { }
 
-  addLocationToStorage(location: UserLocation) {
+  addLocation(location: UserLocation) {
     this.localStorageService.add(location)
     this.allLocations.next(this.localStorageService.get())
   }
 
 
   getAllLocations(): UserLocation[] {
+    
     return this.localStorageService.get()
   }
 

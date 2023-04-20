@@ -56,7 +56,7 @@ export class EditLocationComponent implements OnInit {
         logo: this.addLocationForm.controls['logo'].value,
       };
 
-      this.locationService.addLocationToStorage(location);
+      this.locationService.addLocation(location);
       this.addLocationForm.reset();
       this.logo = null;
     } catch (error) {
