@@ -5,6 +5,7 @@ import { Location } from 'src/app/models/location.model';
 import { UserLocation } from 'src/app/models/user-location.model';
 import { mapOptions, MarkerOptions } from 'src/app/configs/map-config'
 import { LocationService } from 'src/app/services/location.service';
+import { ErrorHandlingService } from 'src/app/services/error-handling.service';
 
 
 
@@ -15,16 +16,14 @@ import { LocationService } from 'src/app/services/location.service';
 })
 export class MapComponent {
   @Output() addLocation = new EventEmitter<Location>;
-
   @Input() locations: UserLocation[]
-
   options = mapOptions
   markerOptions: L.MarkerOptions = MarkerOptions
   map: L.Map;
   allMarkers: L.Marker[] = [];
 
 
-  constructor(private elementRef: ElementRef, private locationService: LocationService) { }
+  constructor(private elementRef: ElementRef, private locationService: LocationService, private errorHandlingService: ErrorHandlingService) { }
 
   onMapReady(map: L.Map): void {
     this.map = map;
@@ -47,6 +46,8 @@ export class MapComponent {
 
 
   addMarker(location: UserLocation): void {
+
+
     const customPopup = L.popup({ closeButton: false }).setContent(
       `
       <div>
@@ -63,22 +64,26 @@ export class MapComponent {
   </div>
         `
     );
-
-    const markers = marker(location.locationDetails, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
-      this.elementRef.nativeElement
-        .querySelector(".close")
-        .addEventListener("click", e => {
-          this.close();
-        });
-    })
-      .on("popupopen", () => {
+    try {
+      const markers = marker(location.locationDetails, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
         this.elementRef.nativeElement
-          .querySelector(".delete")
+          .querySelector(".close")
           .addEventListener("click", e => {
-            this.delete(location.locationDetails, markers);
+            this.close();
           });
-      });
-    this.allMarkers.push(markers)
+      })
+        .on("popupopen", () => {
+          this.elementRef.nativeElement
+            .querySelector(".delete")
+            .addEventListener("click", e => {
+              this.delete(location.locationDetails, markers);
+            });
+        });
+      this.allMarkers.push(markers)
+    }
+    catch (error) {
+      this.errorHandlingService.error('failed to add markers')
+    }
   }
 
 
@@ -90,19 +95,19 @@ export class MapComponent {
 
 
   delete(location, markers): void {
+    try {
 
-    const markerGroup = L.featureGroup(this.allMarkers);
-
-    this.allMarkers.forEach(marker => {
-
-      this.map.removeLayer(markers);
-    });
-
-    this.map.invalidateSize();
-    this.map.fitBounds(markerGroup.getBounds());
-
-
-    this.locationService.deleteLocation(location)
+      const markerGroup = L.featureGroup(this.allMarkers);
+      this.allMarkers.forEach(marker => {
+        this.map.removeLayer(markers);
+      });
+      this.map.invalidateSize();
+      this.map.fitBounds(markerGroup.getBounds());
+      this.locationService.deleteLocation(location)
+    }
+    catch (error) {
+      this.errorHandlingService.error('failed to delete user')
+    }
 
   }
 
