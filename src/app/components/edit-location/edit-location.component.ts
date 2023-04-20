@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import * as L from 'leaflet';
 import { getImageUrl } from 'leaflet-image';
@@ -20,13 +20,13 @@ export const dropDownOptions = [
   styleUrls: ['./edit-location.component.css']
 })
 
-export class EditLocationComponent implements OnInit {
+export class EditLocationComponent implements OnInit, OnChanges {
   @Input() allLocations: UserLocation[]
 
   addLocationForm: FormGroup;
   showMap: boolean = false
   locationImage = null
-  logo: string
+  logo: string | null
   dropDownOptions = dropDownOptions
   maxFileSize = 512 * 512;
 
@@ -44,6 +44,12 @@ export class EditLocationComponent implements OnInit {
       logo: ['', [Validators.required]],
     });
   }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['allLocations']) {
+      console.log('edit location allLocations', changes['allLocations'].currentValue);
+
+    }
+  }
 
 
   submit() {
@@ -59,9 +65,11 @@ export class EditLocationComponent implements OnInit {
         logo: this.addLocationForm.controls['logo'].value,
       }
       this.locationService.addLocationToStorage(location)
+      this.addLocationForm.reset()
+      this.logo = null
     }
-
   }
+
 
   onFileSelected(event: any): void {
     this.addLocationForm.controls['logo'].markAsTouched()
@@ -98,10 +106,8 @@ export class EditLocationComponent implements OnInit {
 
 
   close() {
-    console.log('this.addLocationForm.controls', this.addLocationForm.controls['name']);
-
   }
 
 
-
+  
 }

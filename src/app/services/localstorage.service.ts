@@ -15,7 +15,7 @@ export class LocalstorageService {
   add(item: UserLocation) {
     const allItems = this.get()
     allItems.push(item)
-    debugger
+    
     localStorage.setItem(this.key, JSON.stringify(allItems));
   }
 
@@ -37,10 +37,9 @@ export class LocalstorageService {
   delete(locationDetails: Location) {
     let allLocations: UserLocation[] = this.get()
     const afterItemDeletedLocations = allLocations.filter(i => {
-      return i.locationDetails.lat === locationDetails.lat &&
-        i.locationDetails.lng === locationDetails.lng;
+      return i.locationDetails.lat != locationDetails.lat &&
+        i.locationDetails.lng != locationDetails.lng;
     })
-
     const updatedLocations = afterItemDeletedLocations;
     this.addAll(updatedLocations)
   }

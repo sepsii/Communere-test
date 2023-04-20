@@ -1,11 +1,12 @@
-import { Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { LatLng, marker } from 'leaflet';
 import { Location } from 'src/app/models/location.model';
 import leafletImage from 'leaflet-image';
 import { UserLocation } from 'src/app/models/user-location.model';
 import { mapOptions, MarkerOptions } from 'src/app/configs/map-config'
-import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
+import { LocationService } from 'src/app/services/location.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -14,36 +15,24 @@ import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements OnChanges {
-  @Input() allLocations
+export class MapComponent {
   @Output() addLocation = new EventEmitter<Location>;
 
-  locations: UserLocation[]
+  @Input() locations: UserLocation[]
 
   options = mapOptions
   markerOptions: L.MarkerOptions = MarkerOptions
   map: L.Map;
-  screenshot = new SimpleMapScreenshoter()
+  allMarkers: L.Marker[] = [];
 
 
-  constructor(private elementRef: ElementRef) { }
-
-
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['allLocations']) {
-      this.locations = changes['allLocations'].currentValue
-    }
-  }
-
+  constructor(private elementRef: ElementRef, private locationService: LocationService) { }
 
   onMapReady(map: L.Map) {
     this.map = map;
     this.addAllMarkersToMap()
-    this.screenshot.addTo(this.map)
-
-
   }
+
 
 
   onMapClick(event: { latlng: LatLng }) {
@@ -57,13 +46,13 @@ export class MapComponent implements OnChanges {
       this.addMarker(location)
     }
   }
-  addMarker(location: UserLocation) {
 
+
+  addMarker(location: UserLocation) {
     const customPopup = L.popup({ closeButton: false }).setContent(
       `
       <div>
-      <div style="color: rgb(76 196 39);
-      background-color: rgb(200 212 200);">
+      <div >
           Location Details
       </div>
       <div>
@@ -71,13 +60,13 @@ export class MapComponent implements OnChanges {
       </div>
       <div style="display: flex;flex-direction: row;justify-content: end; gap: 10px;">
           <button style="background-color: beige;" class="close"> close</button>
-          <button style="background-color: rgb(121, 183, 231);" class="edit"> edit</button>
+          <button style="background-color: rgb(121, 183, 231);" class="delete"> delete</button>
       </div>
   </div>
         `
     );
 
-    marker(location.locationDetails, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
+    const markers = marker(location.locationDetails, this.markerOptions).addTo(this.map).bindPopup(customPopup).on("popupopen", () => {
       this.elementRef.nativeElement
         .querySelector(".close")
         .addEventListener("click", e => {
@@ -86,17 +75,38 @@ export class MapComponent implements OnChanges {
     })
       .on("popupopen", () => {
         this.elementRef.nativeElement
-          .querySelector(".edit")
+          .querySelector(".delete")
           .addEventListener("click", e => {
-            // this.edit(markerPosition);
+            this.delete(location.locationDetails, markers);
           });
       });
+    this.allMarkers.push(markers)
   }
 
 
 
   close() {
     this.map.closePopup()
+
+  }
+
+
+  delete(location, markers) {
+
+    const markerGroup = L.featureGroup(this.allMarkers);
+
+    this.allMarkers.forEach(marker => {
+      if (marker = markers) {
+      }
+      this.map.removeLayer(markers);
+    });
+
+    this.map.invalidateSize();
+    this.map.fitBounds(markerGroup.getBounds());
+
+
+    this.locationService.deleteLocation(location)
+ 
   }
 
 

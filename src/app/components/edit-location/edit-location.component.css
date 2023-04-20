@@ -5,29 +5,10 @@
     align-items: center;
     /* width: 100%; */
     gap: 20px;
-    border: 1px solid grey;
+    border: 1px solid #5392b7;
     padding: 20px;
+    border-radius: 0px 0px 8px 8px;
 }
-
-/* .location_name {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.location_name span {
-    width: 50%;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.location_name input {
-    width: 50%;
-    display: flex;
-    justify-content: flex-start;
-} */
 
 .controls {
     margin-top: 20px;
@@ -68,4 +49,11 @@ label {
     color: red;
     font-size: 1rem;
 
+}
+
+.header {
+    background-color: #5392b7;
+    color: white;
+    padding: 8px;
+    border-radius: 8px 8px 0px 0px;
 }

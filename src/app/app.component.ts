@@ -20,10 +20,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.allLocationsSubscription = this.locationService.allLocations.subscribe((res: UserLocation[]) => {
       this.allLocations = res
-      console.log('resss', res);
-
     })
   }
+
 
   ngOnDestroy(): void {
     if (this.allLocationsSubscription) {
@@ -31,3 +30,4 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 }
+

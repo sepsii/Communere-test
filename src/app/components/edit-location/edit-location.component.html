@@ -1,5 +1,7 @@
 <div *ngIf="!showMap">
-
+    <div class="header">
+        Share Location
+    </div>
     <form [formGroup]="addLocationForm" class="add_location">
         <div class="location_name">
             <span>location Name</span>
@@ -38,11 +40,11 @@
     </form>
 
     <div class="controls">
-        <button (click)="submit()" [disabled]="addLocationForm.valid">Submit</button>
+        <button (click)="submit()" [disabled]="!addLocationForm.valid">Submit</button>
         <button (click)="close()">close</button>
     </div>
 
 </div>
 <div *ngIf="showMap">
-    <app-map (addLocation)="onLocationSelected($event)" [allLocations]="allLocations"></app-map>
+    <app-map (addLocation)="onLocationSelected($event)" [locations]="allLocations"></app-map>
 </div>
