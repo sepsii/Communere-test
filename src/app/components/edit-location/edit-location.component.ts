@@ -7,12 +7,7 @@ import { UserLocation } from 'src/app/models/user-location.model';
 import { FormValidationService } from 'src/app/services/form-validation.service';
 import { LocationService } from 'src/app/services/location.service';
 import { fileSizeValidator } from 'src/app/validator/fileSizeValidator';
-
-export const dropDownOptions = [
-  { value: 1, label: 'Business' },
-  { value: 2, label: 'Home' },
-  { value: 3, label: 'Cafe' },
-];
+import { DROPDOWN_OPTIONS } from 'src/app/constants/dropdown-options'
 
 @Component({
   selector: 'app-edit-location',
@@ -20,14 +15,14 @@ export const dropDownOptions = [
   styleUrls: ['./edit-location.component.css']
 })
 
-export class EditLocationComponent implements OnInit, OnChanges {
+export class EditLocationComponent implements OnInit {
   @Input() allLocations: UserLocation[]
 
   addLocationForm: FormGroup;
   showMap: boolean = false
   locationImage = null
   logo: string | null
-  dropDownOptions = dropDownOptions
+  dropDownOptions = DROPDOWN_OPTIONS
   maxFileSize = 512 * 512;
 
   constructor(private formBuilder: FormBuilder,
@@ -40,19 +35,13 @@ export class EditLocationComponent implements OnInit, OnChanges {
     this.addLocationForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(5)]],
       locationDetails: ['', Validators.required],
-      type: [dropDownOptions[0].value, Validators.required],
+      type: [this.dropDownOptions[0].value, Validators.required],
       logo: ['', [Validators.required]],
     });
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['allLocations']) {
-      console.log('edit location allLocations', changes['allLocations'].currentValue);
-
-    }
-  }
 
 
-  submit() {
+  submit(): void {
 
     if (!this.addLocationForm.valid) {
       this.addLocationForm.markAllAsTouched()
@@ -109,5 +98,5 @@ export class EditLocationComponent implements OnInit, OnChanges {
   }
 
 
-  
+
 }
