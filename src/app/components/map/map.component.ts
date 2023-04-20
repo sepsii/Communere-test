@@ -1,12 +1,10 @@
-import { ChangeDetectorRef, Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 import * as L from 'leaflet';
 import { LatLng, marker } from 'leaflet';
 import { Location } from 'src/app/models/location.model';
-import leafletImage from 'leaflet-image';
 import { UserLocation } from 'src/app/models/user-location.model';
 import { mapOptions, MarkerOptions } from 'src/app/configs/map-config'
 import { LocationService } from 'src/app/services/location.service';
-import { Subscription } from 'rxjs';
 
 
 
@@ -28,27 +26,27 @@ export class MapComponent {
 
   constructor(private elementRef: ElementRef, private locationService: LocationService) { }
 
-  onMapReady(map: L.Map) {
+  onMapReady(map: L.Map): void {
     this.map = map;
     this.addAllMarkersToMap()
   }
 
 
 
-  onMapClick(event: { latlng: LatLng }) {
+  onMapClick(event: { latlng: LatLng }): void {
     const markerPosition = event.latlng;
     this.addLocation.emit(markerPosition)
   }
 
 
-  addAllMarkersToMap() {
+  addAllMarkersToMap(): void {
     for (const location of this.locations) {
       this.addMarker(location)
     }
   }
 
 
-  addMarker(location: UserLocation) {
+  addMarker(location: UserLocation): void {
     const customPopup = L.popup({ closeButton: false }).setContent(
       `
       <div>
@@ -85,19 +83,18 @@ export class MapComponent {
 
 
 
-  close() {
+  close(): void {
     this.map.closePopup()
 
   }
 
 
-  delete(location, markers) {
+  delete(location, markers): void {
 
     const markerGroup = L.featureGroup(this.allMarkers);
 
     this.allMarkers.forEach(marker => {
-      if (marker = markers) {
-      }
+
       this.map.removeLayer(markers);
     });
 
@@ -106,7 +103,7 @@ export class MapComponent {
 
 
     this.locationService.deleteLocation(location)
- 
+
   }
 
 

@@ -66,26 +66,6 @@ export class EditLocationComponent implements OnInit {
 
 
 
-  // onFileSelected(event: any): void {
-  //   this.addLocationForm.controls['logo'].markAsTouched()
-  //   const file: File = event.target.files[0];
-
-  //   if (file && file.size > MAX_FILE_SIZE) {
-  //     const control = { value: file };
-  //     const validator = fileSizeValidator(MAX_FILE_SIZE);
-  //     const errors = validator(control as AbstractControl);
-  //     this.addLocationForm.controls['logo'].setErrors(errors)
-  //   }
-  //   else {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       const imageBase64 = reader.result as string;
-  //       this.addLocationForm.controls['logo'].setValue(imageBase64);
-  //       this.logo = imageBase64
-  //     }
-  //   };
-  // }
 
 
   onFileSelected(event: any): void {
@@ -103,7 +83,6 @@ export class EditLocationComponent implements OnInit {
       this.addLocationForm.controls['logo'].setErrors(imageErrors);
       return
     }
-
 
     if (file.size > MAX_FILE_SIZE) {
       const control = { value: file };
