@@ -1,4 +1,5 @@
 import { tileLayer, latLng, icon } from "leaflet";
+const MARKER_ICON_URL = 'assets/marker-icon.png'
 export const mapOptions = {
   layers: [
     tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -12,5 +13,5 @@ export const mapOptions = {
 
 
 export const MarkerOptions = {
-  icon: icon({ iconUrl: 'assets/marker-icon.png' })
+  icon: icon({ iconUrl: MARKER_ICON_URL })
 };
