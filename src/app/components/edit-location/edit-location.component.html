@@ -12,6 +12,7 @@
                 <input type="text" formControlName="name" placeholder="" >
             </div>
         </div>
+        
         <div class='error' *ngIf="addLocationForm.controls['name'].errors && addLocationForm.controls['name'].touched">
             {{formValidationService.getErrorMessage(addLocationForm.get('name')!)}}
         </div>

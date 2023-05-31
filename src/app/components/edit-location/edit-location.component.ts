@@ -92,6 +92,7 @@ export class EditLocationComponent implements OnInit {
       return;
     }
 
+    
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
